@@ -29,7 +29,14 @@ The app relies on a secret set as the environment variable `JWT_SECRET` to produ
 Completing the project involves several steps:
 
 1. Write a Dockerfile for a simple Flask API
+    1. Wrote `Dockerfile` and `env_file`
+  
 2. Build and test the container locally
+    1. `docker build --tag jwt-api-test .`
+    2. `docker run -p 80:8080 --env env_file jwt-api-test`
+    
+    Note: Make sure nothing is running on port 8080
+
 3. Create an EKS cluster
 4. Store a secret using AWS Parameter Store
 5. Create a CodePipeline pipeline triggered by GitHub checkins
