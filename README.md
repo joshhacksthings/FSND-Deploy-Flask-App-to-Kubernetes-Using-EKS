@@ -38,6 +38,20 @@ Completing the project involves several steps:
     Note: Make sure nothing is running on port 8080
 
 3. Create an EKS cluster
+    1. Create Cluster
+        1. `eksctl create cluster --name simple-jwt-api`
+            - If you get an error about availability zones not being available (like `us-east-1`), specify different zones using `--zones us-east-1f,us-east-1b`
+    
+    2. Set up policies:
+        1. Set up IAM Role on AWS
+            - `ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)`
+        2. Create role policy document that allows the actions "eks:Describe*"
+            - `TRUST="{ \"Version\": \"2012-10-17\", \"Statement\": [ { \"Effect\": \"Allow\", \"Principal\": { \"AWS\": \"arn:aws:iam::${ACCOUNT_ID}:root\" }, \"Action\": \"sts:AssumeRole\" } ] }"`
+        3. Create policy in a tmp directory
+            - `echo '{ "Version": "2012-10-17", "Statement": [ { "Effect": "Allow", "Action": [ "eks:Describe*", "ssm:GetParameters" ], "Resource": "*" } ] }' > /tmp/iam-role-policy`
+        4. Attach policy "UdacityFlaskDeployCBKubectlRole"
+            - `aws iam put-role-policy --role-name UdacityFlaskDeployCBKubectlRole --policy-name eks-describe --policy-document file:///tmp/iam-role-policy`
+
 4. Store a secret using AWS Parameter Store
 5. Create a CodePipeline pipeline triggered by GitHub checkins
 6. Create a CodeBuild stage which will build, test, and deploy your code
